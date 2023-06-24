@@ -1,6 +1,3 @@
-streamlit
-requests
-
 default: pytest
 
 # default: pylint pytest
@@ -22,8 +19,8 @@ install_requirements:
 #         HEROKU COMMANDS
 # ----------------------------------
 
-streamlit:
-	-@streamlit run app.py
+run_app:
+	-@streamlit run app/app.py
 
 
 # ----------------------------------
