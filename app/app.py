@@ -69,11 +69,15 @@ if st.button('Search'):
 
     print('Searching crimes...')
     response = requests.get(api_url, params=params)
-    data = response.json()["data"]
-
     # Create a Pandas DataFrame from the data
-    dataframe = pd.DataFrame(data)
+    st.session_state.data = response.json()["data"]
+    st.session_state.search_executed = True
+else:
 
+    st.write('No search yet')
+if st.session_state.search_executed:
+    data = st.session_state.data
+    dataframe = pd.DataFrame(data)
     if data:
         for row in data:
             marker = folium.Marker([row['Latitude'], row['Longitude']])
@@ -81,17 +85,10 @@ if st.button('Search'):
             marker.add_to(map)
         # Set the flag to indicate that a search has been executed
         st.session_state.search_executed = True
+        st_folium(map, width=700)
     else:
-        st.session_state.search_executed = False
-
-    st_folium(map, width=700)
-
-else:
-    st.write('No search yet')
-
-# Display the message if no crime was committed and a search has been executed
-if not st.session_state.search_executed and st.session_state.search_executed is not False:
-    st.markdown(""" ## NO CRIME WAS COMMITTED """)
+    #Display the message if no crime was committed and a search has been executed
+        st.markdown(""" ## NO CRIME WAS COMMITTED """)
 
 # Store the markers in the session state to persist them
 st.session_state.markers_data = markers_data
