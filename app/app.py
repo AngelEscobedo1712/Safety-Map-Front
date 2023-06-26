@@ -60,9 +60,10 @@ if st.button('Search'):
     # Make API request to the backend to get historical data
     api_url = API_HOST + "/get_historical_data"
 
+    year = selected_values['Year'] if selected_values['Year'] != 'ALL' else None
     params = {
         'neighborhood': selected_values['Neighborhood'],
-        'year': selected_values['Year'],
+        'year': year,
         'month': selected_values['Month'],
         'category': selected_values['Category']
     }
