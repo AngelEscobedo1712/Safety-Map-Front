@@ -49,11 +49,9 @@ for checkbox_label, checkbox_options in checkbox_values.items():
     selected_values[checkbox_label] = st.multiselect(checkbox_label, checkbox_options)
 
 # Initialize the search_executed flag
-print(st.session_state, '**************************')
 if 'search_executed' not in st.session_state:
     st.session_state.search_executed = False
     st.session_state.data = []
-print(st.session_state, '**************************')
 
 markers_data = []
 
@@ -63,10 +61,10 @@ if st.button('Search'):
 
     year = selected_values['Year'] if 'ALL' not in selected_values['Year'] else None
     params = {
-        'neighborhood': selected_values['Neighborhood'],
-        'year': year,
-        'month': selected_values['Month'],
-        'category': selected_values['Category']
+        'neighborhoods': selected_values['Neighborhood'],
+        'years': year,
+        'months': selected_values['Month'],
+        'categories': selected_values['Category']
     }
 
     print('Searching crimes...', params)
@@ -89,9 +87,8 @@ if st.session_state.search_executed:
             marker.add_to(map)
         # Set the flag to indicate that a search has been executed
         st_folium(map, width=700)
+        st.session_state.markers_data = markers_data
+
     else:
         # Display the message if no crime was committed and a search has been executed
         st.markdown(""" ## NO CRIME WAS COMMITTED """)
-
-# Store the markers in the session state to persist them
-st.session_state.markers_data = markers_data
