@@ -1,111 +1,94 @@
 import streamlit as st
 import folium
-from google.cloud import bigquery
 from streamlit_folium import st_folium
-from dotenv import load_dotenv
+import requests
+import pandas as pd
 import os
 
-load_dotenv()
+API_HOST = os.getenv("API_HOST")
 
-# Create a BigQuery client
-client = bigquery.Client()
-
-# Define BigQuery project ID, dataset ID, and table ID
-project_id = os.getenv("GCP_PROJECT")
-dataset_id = os.getenv("BQ_DATASET")
-table_id = os.getenv("TABLE_ID")
-
-# Construct the BigQuery table reference
-table_ref = client.dataset(dataset_id).table(table_id)
-# Query to retrieve the column data
-
-# safety_map front
-
+# Safety Map Front
 st.markdown("""
     # Mexico City - Safety Map
 
     ## Be not part of the statistics
 
-    As much we are loving CDMX we are aware of the fact that it is not the safest place on earth. Therefore we want to provide you
+    As much as we are loving CDMX, we are aware of the fact that it is not the safest place on earth. Therefore, we want to provide you
     with a safety map for this amazing city. The intention of our idea is to give you a clear overview of the neighborhoods where you
-    eat tacos and trink mezcal tranquilito and where better not to go.
+    eat tacos and drink mezcal tranquilito and where it's better not to go.
 
-    Our data data includes all registered crimes in Colonias of CDMX from  **2019 to 2023**
+    Our data includes all registered crimes in Colonias of CDMX from **2019 to 2023**
 
-    To be transparent from the beginning you can find the data for our project public available [here](https://datos.cdmx.gob.mx/dataset/victimas-en-carpetas-de-investigacion-fgj#:~:text=Descargar-,V%C3%ADctimas%20en%20Carpetas%20de%20Investigaci%C3%B3n%20(completa),-CSV)
+    To be transparent from the beginning, you can find the data for our project publicly available [here](https://datos.cdmx.gob.mx/dataset/victimas-en-carpetas-de-investigacion-fgj#:~:text=Descargar-,V%C3%ADctimas%20en%20Carpetas%20de%20Investigaci%C3%B3n%20(completa),-CSV)
 """)
 
-###add map
-
+# Add map
 st.title("Historical crime data")
-
 map = folium.Map(location=[19.4326, -99.1332], zoom_start=11, tiles='Stamen Toner')
 
-##select colonia (names queried from Big Query)
-query = f"SELECT DISTINCT Neighborhood FROM `{project_id}.{dataset_id}.{table_id}`"
-# Execute the query and fetch the results
-query_job = client.query(query)
-rows = query_job.result()
-# Extract the column values into a Python list
-colonias = [row['Neighborhood'] for row in rows]
+# Fetch neighborhoods from the backend
+if 'neighborhoods' not in st.session_state:
+    response = requests.get(API_HOST + "/neighborhoods")
+    neighborhoods = response.json()["neighborhoods"]
+    st.session_state.neighborhoods = neighborhoods
+else:
+    neighborhoods = st.session_state.neighborhoods
 
-###add drop downs
-dropdown_values = {
-    'Neighborhood': colonias,
+# Add checkboxes
+checkbox_values = {
+    'Neighborhood': neighborhoods,
     'Year': ['ALL', 2019, 2020, 2021, 2022, 2023],
-    'Month': ['ALL'] + list(range(1, 13)),
+    'Month': ['ALL'] + ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
     'Category': ['ALL', 'fraud', 'threats', 'threats', 'burglary', 'homicide',
                   'sexual crime', 'property damage', 'domestic violence', 'danger of well-being',
                   'robbery with violence', 'robbery without violence']
 }
 
-# Collect selected values from the dropdown menus
 selected_values = {}
-for dropdown_label, dropdown_options in dropdown_values.items():
-    selected_values[dropdown_label] = st.selectbox(dropdown_label, dropdown_options)
+for checkbox_label, checkbox_options in checkbox_values.items():
+    selected_values[checkbox_label] = st.multiselect(checkbox_label, checkbox_options)
 
-# Fetch the relevant data from BigQuery based on the selected values
-where_clauses = []
-for dropdown_label, selected_value in selected_values.items():
-    if selected_value != 'ALL':
-        if isinstance(selected_value, str):
-            where_clauses.append(f"{dropdown_label} = '{selected_value}'")
-        else:
-            where_clauses.append(f"{dropdown_label} = {selected_value}")
+# Initialize the search_executed flag
+if 'search_executed' not in st.session_state:
+    st.session_state.search_executed = False
+    st.session_state.data = []
 
-if where_clauses:
-    where_clause = " AND ".join(where_clauses)
+markers_data = []
+
+if st.button('Search'):
+    # Make API request to the backend to get historical data
+    api_url = API_HOST + "/get_historical_data"
+
+    year = selected_values['Year'] if 'ALL' not in selected_values['Year'] else None
+    params = {
+        'neighborhoods': selected_values['Neighborhood'],
+        'years': year,
+        'months': selected_values['Month'],
+        'categories': selected_values['Category']
+    }
+
+    print('Searching crimes...', params)
+    response = requests.post(api_url, json=params)
+    print(response.content)
+    # Create a Pandas DataFrame from the data
+    st.session_state.data = response.json()["data"]
+    st.session_state.search_executed = True
 else:
-    where_clause = "1 = 1"  # Condition to select all values
+    st.write('No search yet')
 
-# Prepare the query
-query = f"""
-    SELECT Latitude, Longitude
-    FROM `{dataset_id}.{table_id}`
-    WHERE {where_clause}
-"""
+if st.session_state.search_executed:
+    data = st.session_state.data
+    dataframe = pd.DataFrame(data)
+    print(f'{dataframe=}')
+    if data:
+        for row in data:
+            marker = folium.Marker([row['Latitude'], row['Longitude']])
+            markers_data.append(marker)
+            marker.add_to(map)
+        # Set the flag to indicate that a search has been executed
+        st_folium(map, width=700)
+        st.session_state.markers_data = markers_data
 
-
-# Run the query
-query_job = client.query(query)
-dataframe = query_job.to_dataframe()
-
-dataframe_shape = dataframe.shape
-
-# Create a Folium map
-if dataframe_shape[0] > 0:
-    map_center = [dataframe['Latitude'].iloc[0], dataframe['Longitude'].iloc[0]]
-else:
-    map_center = [19.4326, -99.1332]  # Default center if no data is available
-
-map = folium.Map(location=map_center, zoom_start=11, tiles='Stamen Toner')
-
-# Add markers to the map
-if dataframe_shape[0] > 0:
-    for _, row in dataframe.iterrows():
-        folium.Marker([row['Latitude'], row['Longitude']]).add_to(map)
-else:
-    st.markdown(""" ## NO CRIME WAS COMMITTED """)
-
-# Display the map
-st_folium(map, width=700)
+    else:
+        # Display the message if no crime was committed and a search has been executed
+        st.markdown(""" ## NO CRIME WAS COMMITTED """)
