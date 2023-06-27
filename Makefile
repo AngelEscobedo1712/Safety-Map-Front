@@ -20,7 +20,7 @@ install_requirements:
 # ----------------------------------
 
 run_app:
-	-@streamlit run app/app.py
+	-@streamlit run app/Safety-Map.py
 
 
 # ----------------------------------
