@@ -1,5 +1,5 @@
 import streamlit as st
-from streamlit_folium import st_folium
+from streamlit_folium import st_folium, folium_static
 import requests
 import pandas as pd
 import os
@@ -9,11 +9,14 @@ import folium
 #from IPython.display import display
 #import ipywidgets as widgets
 from folium.plugins import HeatMap, HeatMapWithTime
+import json
 #from datetime import datetime, timedelta
 
 
 API_HOST = os.getenv("API_HOST")
 
+api_url_download_polygons = API_HOST + "/download_polygons"
+response_download_polygons = requests.get(api_url_download_polygons).json()
 # Add map
 st.title("Forecasting Crimes")
 
@@ -54,9 +57,9 @@ if st.button('Search'):
     }
 
     response = requests.get(api_url, params=params)
-    print(response.content)
     # Create a Pandas DataFrame from the data
     st.session_state.data = response.json()["data"]
+    #st.write(response.json()["data"])
     st.session_state.search_executed = True
 
 
@@ -73,24 +76,20 @@ if st.session_state.search_executed:
 
     category = selected_values['Category']
 
-
-
     if data:
 
-        api_url_get_polygons = API_HOST + "/get_polygons"
-        response_get_polygons = requests.get(api_url_get_polygons)
 
     #test if everything worked and build a map
-        poly_geo = 'local_geo.json'
-
+        #poly_geo = 'local_geo.json'
+        #st.write(response_download_polygons.json())
 
         map = folium.Map(location=[19.4326, -99.1332], zoom_start=11, tiles='Stamen Toner')
 
         folium.Choropleth(
-            geo_data=poly_geo,
+            geo_data=response_download_polygons,
             name="choropleth",
-            data=data,
-            columns=["code", {category}],
+            data=dataframe,
+            columns=["code", category],
             key_on="feature.properties.geo_point_2d.lat",
             fill_color="YlGn",
             fill_opacity=0.7,
@@ -100,7 +99,7 @@ if st.session_state.search_executed:
 
         folium.LayerControl().add_to(map)
 
-        st_folium(map, width=700)
+        folium_static(map, width=700)
 
     else:
         # Display the message if no crime was committed and a search has been executed
