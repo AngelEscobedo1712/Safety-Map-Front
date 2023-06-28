@@ -7,6 +7,8 @@ import os
 
 API_HOST = os.getenv("API_HOST")
 
+api_url_download_polygons = API_HOST + "/download_polygons"
+response_download_polygons = requests.get(api_url_download_polygons)
 
 ## Safety Map Front
 st.markdown("""
