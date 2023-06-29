@@ -57,15 +57,13 @@ with col1:
     for checkbox_label, checkbox_options in checkbox_values.items():
         selected_values[checkbox_label] = st.selectbox(checkbox_label, checkbox_options)
 
-
-with col2:
-
-    # Initialize the search_executed flag
+  # Initialize the search_executed flag
     if 'search_executed' not in st.session_state:
         st.session_state.search_executed = False
         st.session_state.data = []
 
-    if st.button('Search'):
+with col2:
+    if st.button('Search 🔍'):
         # Check if both Month and Category are selected
         st.session_state.search_executed = True
         # Make API request to the backend to get forecasting data
