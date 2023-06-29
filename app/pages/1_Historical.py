@@ -107,7 +107,6 @@ else:
 if st.session_state.search_executed:
         data = st.session_state.data
         dataframe = pd.DataFrame(data)
-        st.write(dataframe)
 
 
 
