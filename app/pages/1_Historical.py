@@ -90,7 +90,7 @@ with col1:
 
     # Check if values were selected
     if all(selected_values.values()):
-        if st.button('Search'):
+        if st.button('Search 🔍'):
             # Make API request to the backend to get historical data
             api_url = API_HOST + "/get_historical_data"
 
@@ -143,7 +143,7 @@ with col2:
                 # Set the flag to indicate that a search has been executed
                 st.success('Historical map complete')
 
-                folium_static(map, width=800)
+                folium_static(map, width=900)
                 st.session_state.markers_data = markers_data
 
             else:
