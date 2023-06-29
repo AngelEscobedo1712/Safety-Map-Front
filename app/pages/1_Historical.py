@@ -1,6 +1,6 @@
 import streamlit as st
 import folium
-from streamlit_folium import st_folium
+from streamlit_folium import st_folium, folium_static
 import requests
 import pandas as pd
 import os
@@ -52,9 +52,9 @@ if st.button('Search'):
         'categories': selected_values['Category']
     }
 
-    print('Searching crimes...', params)
+    st.write('Searching crimes...')
     response = requests.post(api_url, json=params)
-    print(response.content)
+    #print(response.content)
     # Create a Pandas DataFrame from the data
     st.session_state.data = response.json()["data"]
     st.session_state.search_executed = True
@@ -64,14 +64,13 @@ else:
 if st.session_state.search_executed:
     data = st.session_state.data
     dataframe = pd.DataFrame(data)
-    print(f'{dataframe=}')
     if data:
         for row in data:
-            marker = folium.Marker([row['Latitude'], row['Longitude']])
+            marker = folium.Marker([row['Latitude'], row['Longitude']], tooltip=row['Category'])
             markers_data.append(marker)
             marker.add_to(map)
         # Set the flag to indicate that a search has been executed
-        st_folium(map, width=700)
+        folium_static(map, width=700)
         st.session_state.markers_data = markers_data
 
     else:
