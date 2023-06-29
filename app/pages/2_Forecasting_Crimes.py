@@ -62,7 +62,6 @@ with col1:
         st.session_state.search_executed = False
         st.session_state.data = []
 
-with col2:
     if st.button('Search 🔍'):
         # Check if both Month and Category are selected
         st.session_state.search_executed = True
@@ -79,6 +78,8 @@ with col2:
             response = requests.get(api_url, params=params)
             if response.status_code == 200:
                 data = response.json()["data"]
+
+with col2:
         if data:
             dataframe = pd.DataFrame(data)
             category = selected_values['Category']
