@@ -5,7 +5,6 @@ import requests
 import pandas as pd
 import os
 
-
 st.set_page_config(layout="wide")
 
 
