@@ -8,6 +8,19 @@ import time
 
 API_HOST = os.getenv("API_HOST")
 
+
+month_mapping = {
+    "July": '07',
+    "August": '08',
+    "September": '09',
+    "October": '10',
+    "November": '11',
+    "December": '12'
+}
+
+month_mapping_swapped = {value: key for key, value in month_mapping.items()}
+
+
 # Add map
 st.title("Forecasting Crimes from July 2023 to December 2023")
 
@@ -18,7 +31,7 @@ if "polygons_layer" not in st.session_state:
 
 # Add checkboxes
 checkbox_values = {
-    'Month': ["07", "08", "09", "10", "11", "12"],
+    'Month': list(month_mapping.keys()),
     'Category': ['fraud', 'threats', 'burglary', 'homicide',
                   'sexual_crime', 'property_damage', 'domestic_violence', 'danger_of_well_being',
                   'robbery_with_violence', 'robbery_without_violence', 'score']
@@ -43,7 +56,7 @@ if st.button('Search'):
     st.session_state.search_executed = True
     # Make API request to the backend to get forecasting data
     api_url = API_HOST + "/get_crimes"
-    year_month = f"2023-{selected_values['Month']}-01"
+    year_month = f"2023-{month_mapping[selected_values['Month']]}-01"
     category = selected_values['Category']
     year_month_search = year_month if 'ALL' not in year_month else None
     params = {

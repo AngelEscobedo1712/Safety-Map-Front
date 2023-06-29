@@ -19,25 +19,44 @@ if 'neighborhoods' not in st.session_state:
 else:
     neighborhoods = st.session_state.neighborhoods
 
-
 category_colors = {
-    'fraud': '#ffffcc',
-    'domestic violence': '#ffff99',
-    'threats': '#ffff66',
-    'robbery without violence': '#ffff33',
-    'property damage': '#ffff00',
-    'danger of well-being': '#ffcc00',
-    'burglary': '#ff9900',
-    'robbery with violence': '#ff6600',
-    'sexual crime': '#ff3300',
-    'homicide': '#ff0000'
+    'fraud': '#0068fa',
+    'domestic violence': '#00eefa',
+    'threats': '#00fa71',
+    'robbery without violence': '#8afa00',
+    'property damage': '#fae500',
+    'danger of well-being': '#fa8500',
+    'burglary': '#fa9e00',
+    'robbery with violence': '#fa5300',
+    'sexual crime': '#fa0000',
+    'homicide': '#cc0808'
 }
+
+month_mapping = {
+    "January": "Enero",
+    "February": "Febrero",
+    "March": "Marzo",
+    "April": "Abril",
+    "May": "Mayo",
+    "June": "Junio",
+    "July": "Julio",
+    "August": "Agosto",
+    "September": "Septiembre",
+    "October": "Octubre",
+    "November": "Noviembre",
+    "December": "Diciembre"
+}
+
+month_mapping_swapped = {value: key for key, value in month_mapping.items()}
+
+
+
 
 # Add checkboxes
 checkbox_values = {
     'Neighborhood': neighborhoods,
     'Year': ['ALL', 2019, 2020, 2021, 2022, 2023],
-    'Month': ['ALL'] + ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+    'Month': ['ALL'] + list(month_mapping.keys()),
     'Category': ['ALL', 'fraud', 'threats', 'threats', 'burglary', 'homicide',
                   'sexual crime', 'property damage', 'domestic violence', 'danger of well-being',
                   'robbery with violence', 'robbery without violence']
@@ -64,7 +83,7 @@ if all(selected_values.values()):
         params = {
             'neighborhoods': selected_values['Neighborhood'],
             'years': year,
-            'months': selected_values['Month'],
+            'months': [month_mapping.get(month, month) for month in selected_values['Month']],
             'categories': selected_values['Category']
         }
 
@@ -88,19 +107,24 @@ else:
 if st.session_state.search_executed:
         data = st.session_state.data
         dataframe = pd.DataFrame(data)
+        st.write(dataframe)
+
+
+
 
         markers_data = []
 
         if data:
+            dataframe['Month'] = dataframe['Month'].replace(month_mapping_swapped)
             for row in data:
                 category = row['Category']
                 color = category_colors.get(category, '#000000')  # Default to black if category not in mapping
                 folium.CircleMarker(
                     location=[row['Latitude'], row['Longitude']],
+                    icon=folium.Icon(color=color),  # Pass the color variable
                     radius=5,
                     color=color,
                     fill=True,
-                    fill_color=color,
                     fill_opacity=0.6,
                     tooltip=row['Category']
                 ).add_to(map)
