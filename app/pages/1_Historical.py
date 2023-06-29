@@ -109,7 +109,6 @@ with col1:
                     st.session_state.search_executed = True
 
         else:
-            st.write('No search yet')
             st.empty()
 
 
@@ -123,9 +122,6 @@ with col2:
     if st.session_state.search_executed:
             data = st.session_state.data
             dataframe = pd.DataFrame(data)
-
-
-
 
             markers_data = []
 
@@ -147,7 +143,7 @@ with col2:
                 # Set the flag to indicate that a search has been executed
                 st.success('Historical map complete')
 
-                folium_static(map, width=700)
+                folium_static(map, width=800)
                 st.session_state.markers_data = markers_data
 
             else:
