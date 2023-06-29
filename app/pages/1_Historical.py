@@ -52,7 +52,7 @@ if st.button('Search'):
         'categories': selected_values['Category']
     }
 
-    print('Searching crimes...', params)
+    st.write('Searching crimes...')
     response = requests.post(api_url, json=params)
     #print(response.content)
     # Create a Pandas DataFrame from the data
@@ -64,10 +64,9 @@ else:
 if st.session_state.search_executed:
     data = st.session_state.data
     dataframe = pd.DataFrame(data)
-    print(f'{dataframe=}')
     if data:
         for row in data:
-            marker = folium.Marker([row['Latitude'], row['Longitude']])
+            marker = folium.Marker([row['Latitude'], row['Longitude']], tooltip=row['Category'])
             markers_data.append(marker)
             marker.add_to(map)
         # Set the flag to indicate that a search has been executed
