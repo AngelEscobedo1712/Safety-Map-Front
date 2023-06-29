@@ -143,7 +143,7 @@ with col2:
                 # Set the flag to indicate that a search has been executed
                 st.success('Historical map complete')
 
-                folium_static(map, width=800)
+                folium_static(map, width=750)
                 st.session_state.markers_data = markers_data
 
             else:

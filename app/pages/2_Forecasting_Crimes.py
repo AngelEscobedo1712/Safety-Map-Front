@@ -15,7 +15,7 @@ margins_css = """
         .main > div {
             padding-left: 2rem;
             padding-right: 2rem;
-            padding-top: 2rem;
+            padding-top: 0.5rem;
         }
     </style>
 """
@@ -62,9 +62,9 @@ with col1:
         st.session_state.search_executed = False
         st.session_state.data = []
 
-
+    button = st.button('Search 🔍')
 with col2:
-    if st.button('Search 🔍'):
+    if button:
         # Check if both Month and Category are selected
         st.session_state.search_executed = True
         # Make API request to the backend to get forecasting data
