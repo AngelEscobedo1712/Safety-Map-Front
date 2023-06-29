@@ -26,7 +26,7 @@ st.title("Forecasting Crimes from July 2023 to December 2023")
 checkbox_values = {
     'Month': ["07", "08", "09", "10", "11", "12"],
     'Category': ['fraud', 'threats', 'burglary', 'homicide',
-                  'sexual_crime', 'property_damage', 'domestic_violence', 'danger_of_well-being',
+                  'sexual_crime', 'property_damage', 'domestic_violence', 'danger_of_well_being',
                   'robbery_with_violence', 'robbery_without_violence','score']
 }
 
