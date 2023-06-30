@@ -4,7 +4,6 @@ from streamlit_folium import st_folium, folium_static
 import requests
 import pandas as pd
 import os
-import time
 
 API_HOST = os.getenv("API_HOST")
 
@@ -31,6 +30,8 @@ month_mapping = {
     "December": '12'
 }
 
+
+st.set_page_config(layout='wide')
 month_mapping_swapped = {value: key for key, value in month_mapping.items()}
 
 
