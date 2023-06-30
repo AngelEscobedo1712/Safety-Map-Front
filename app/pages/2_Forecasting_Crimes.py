@@ -45,6 +45,8 @@ with col1:
         response_download_polygons = requests.get(api_url_download_polygons).json()
         st.session_state.polygons_layer = response_download_polygons
 
+
+
     # Add checkboxes
     checkbox_values = {
         'Month': list(month_mapping.keys()),
@@ -85,7 +87,7 @@ with col2:
             # Build the map
             map = folium.Map(location=[19.4326, -99.1332], zoom_start=11, tiles='Stamen Toner')
             st.success('Prediction complete')
-            folium.Choropleth(
+            cp = folium.Choropleth(
                 geo_data=st.session_state.polygons_layer,
                 name="choropleth",
                 data=dataframe,
@@ -96,6 +98,13 @@ with col2:
                 line_opacity=0.2,
                 legend_name=category,
             ).add_to(map)
+
+            neig_data_indexed = dataframe.set_index('code')[category].to_dict()
+            for s in cp.geojson.data['features']:
+                s['properties']['colonia'] = s['properties']['col_name'][0]
+                s['properties'][category] = neig_data_indexed.get(s["properties"]["geo_point_2d"]["lat"])
+
+            folium.GeoJsonTooltip(['colonia', category]).add_to(cp.geojson)
             folium.LayerControl().add_to(map)
             folium_static(map, height=500, width=750)
         else:

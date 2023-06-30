@@ -92,7 +92,6 @@ with col1:
         if st.button('Search 🔍'):
             # Make API request to the backend to get historical data
             api_url = API_HOST + "/get_historical_data"
-
             year = selected_values['Year'] if 'ALL' not in selected_values['Year'] else None
             params = {
                 'neighborhoods': selected_values['Neighborhood'],
@@ -126,7 +125,6 @@ with col2:
 
             if data:
                 dataframe['Month'] = dataframe['Month'].replace(month_mapping_swapped)
-
                 south_west_corner = [min(dataframe.Latitude)*0.9999,min(dataframe.Longitude)*1.0001]
                 north_east_corner = [max(dataframe.Latitude)*1.0001,max(dataframe.Longitude)*0.9999]
                 map = folium.Map(location=[dataframe.Latitude.mean(), dataframe.Longitude.mean()], zoom_start=11, tiles='Stamen Toner')
