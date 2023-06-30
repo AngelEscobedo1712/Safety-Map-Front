@@ -4,6 +4,8 @@ from streamlit_folium import folium_static
 import requests
 import pandas as pd
 import os
+import matplotlib.pyplot as plt
+
 
 st.set_page_config(layout="wide")
 
@@ -27,7 +29,7 @@ API_HOST = os.getenv("API_HOST")
 st.title("Historical 📅 crime data 📜📍")
 #map = folium.Map(location=[19.4326, -99.1332], zoom_start=11, tiles='Stamen Toner')
 
-col1, col2 = st.columns([1,3])
+col1, col2, col3 = st.columns([1,3,1])
 
 with col1:
     # Fetch neighborhoods from the backend
@@ -92,6 +94,7 @@ with col1:
         if st.button('Search 🔍'):
             # Make API request to the backend to get historical data
             api_url = API_HOST + "/get_historical_data"
+
             year = selected_values['Year'] if 'ALL' not in selected_values['Year'] else None
             params = {
                 'neighborhoods': selected_values['Neighborhood'],
@@ -125,6 +128,7 @@ with col2:
 
             if data:
                 dataframe['Month'] = dataframe['Month'].replace(month_mapping_swapped)
+
                 south_west_corner = [min(dataframe.Latitude)*0.9999,min(dataframe.Longitude)*1.0001]
                 north_east_corner = [max(dataframe.Latitude)*1.0001,max(dataframe.Longitude)*0.9999]
                 map = folium.Map(location=[dataframe.Latitude.mean(), dataframe.Longitude.mean()], zoom_start=11, tiles='Stamen Toner')
@@ -144,9 +148,27 @@ with col2:
                 # Set the flag to indicate that a search has been executed
                 st.success('Historical map complete')
 
+
                 folium_static(map, width=750)
                 st.session_state.markers_data = markers_data
 
+                with col3:
+
+
+                    with st.container():
+                        legend_html = """
+                        <style>
+                            .legend-item {{
+                                display: inline-block;
+                                margin-right: 20px;
+                            }}
+                        </style>
+                        <h3>Legend</h3>
+                        <div class="legend-item">
+                            {0}
+                        </div>
+                        """.format("".join([f'<div style="color:{color}"><span style="background-color:{color};">&nbsp;&nbsp;&nbsp;</span> {category.capitalize()}</div>' for category, color in category_colors.items()]))
+                        st.markdown(legend_html, unsafe_allow_html=True)
 
             else:
                 # Display the message if no crime was committed and a search has been executed
