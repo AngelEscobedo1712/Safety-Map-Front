@@ -25,7 +25,7 @@ API_HOST = os.getenv("API_HOST")
 
 # Add map
 st.title("Historical 📅 crime data 📜📍")
-map = folium.Map(location=[19.4326, -99.1332], zoom_start=11, tiles='Stamen Toner')
+#map = folium.Map(location=[19.4326, -99.1332], zoom_start=11, tiles='Stamen Toner')
 
 col1, col2 = st.columns([1,3])
 
@@ -73,7 +73,7 @@ with col1:
         'Neighborhood': neighborhoods,
         'Year': ['ALL', 2019, 2020, 2021, 2022, 2023],
         'Month': ['ALL'] + list(month_mapping.keys()),
-        'Category': ['ALL', 'fraud', 'threats', 'threats', 'burglary', 'homicide',
+        'Category': ['ALL', 'fraud', 'threats', 'burglary', 'homicide',
                     'sexual crime', 'property damage', 'domestic violence', 'danger of well-being',
                     'robbery with violence', 'robbery without violence']
     }
@@ -101,7 +101,7 @@ with col1:
                 'categories': selected_values['Category']
             }
 
-            with st.spinner('Predicting crimes...'):
+            with st.spinner('Retrieving crimes...'):
                 response = requests.post(api_url, json=params)
                 if response.status_code == 200:
                     st.session_state.data = response.json()["data"]
@@ -126,6 +126,10 @@ with col2:
 
             if data:
                 dataframe['Month'] = dataframe['Month'].replace(month_mapping_swapped)
+
+                south_west_corner = [min(dataframe.Latitude)*0.9999,min(dataframe.Longitude)*1.0001]
+                north_east_corner = [max(dataframe.Latitude)*1.0001,max(dataframe.Longitude)*0.9999]
+                map = folium.Map(location=[dataframe.Latitude.mean(), dataframe.Longitude.mean()], zoom_start=11, tiles='Stamen Toner')
                 for row in data:
                     category = row['Category']
                     color = category_colors.get(category, '#000000')  # Default to black if category not in mapping
@@ -138,12 +142,13 @@ with col2:
                         fill_opacity=0.6,
                         tooltip=row['Category']
                     ).add_to(map)
-
+                map.fit_bounds([south_west_corner, north_east_corner])
                 # Set the flag to indicate that a search has been executed
                 st.success('Historical map complete')
 
                 folium_static(map, width=750)
                 st.session_state.markers_data = markers_data
+
 
             else:
                 # Display the message if no crime was committed and a search has been executed
