@@ -23,9 +23,10 @@ st.markdown(margins_css, unsafe_allow_html=True)
 #Define the number of tabs and its names
 
 tab1, tab2 = st.tabs(["⏪ Historical", "Forecasting ⏩"])
-col1, col2 = st.columns([1,3])
 
 with tab1:
+    col1, col2 = st.columns([1,3])
+
     with col1:
         #Title of the page
         st.title("📈Historical Plots 📉")
@@ -115,8 +116,8 @@ with tab1:
 
                 selection = alt.selection_interval(bind='scales')
                 chart = alt.Chart(dataframe).mark_line().encode(
-                    x='datetime:T',
-                    y=alt.Y('TotalCrimes', scale=alt.Scale(domain=(1,10)), axis=alt.Axis(tickMinStep=1, labelOverlap=True)),
+                x='datetime:T',
+                y=alt.Y('TotalCrimes', scale=alt.Scale(domain=(1,10)), axis=alt.Axis(tickMinStep=1, labelOverlap=True)),
                         color='Category'
                 ).add_params(
                     selection
@@ -124,3 +125,9 @@ with tab1:
 
                 # Display the chart using Streamlit
                 st.altair_chart(chart, use_container_width=True)
+
+
+with tab2:
+    #Title of the page
+    st.title("Forecasting Plots 📉")
+    st.subheader("Here you can play with some plots for the Forecasting data")
