@@ -30,8 +30,6 @@ month_mapping = {
     "December": '12'
 }
 
-
-st.set_page_config(layout='wide')
 month_mapping_swapped = {value: key for key, value in month_mapping.items()}
 
 
