@@ -4,7 +4,6 @@ from streamlit_folium import folium_static
 import requests
 import pandas as pd
 import os
-import matplotlib.pyplot as plt
 
 
 st.set_page_config(layout="wide")
