@@ -33,7 +33,7 @@ st.markdown("""
 
     In this part of the App you can search for about 10 types of Crimes for any Neighborhood in México City
 
-    *** Remember we have data from January 2019 up to March 2023, we will update as soon we have new Data ***
+    *** Remember we have data from January 2019 up to March 2023, we will update as soon as we have new Data ***
 
     1.- Select the Neighborhood you want to analyse
 
