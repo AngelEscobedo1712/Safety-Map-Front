@@ -28,6 +28,28 @@ API_HOST = os.getenv("API_HOST")
 st.title("Historical 📅 crime data 📜📍")
 #map = folium.Map(location=[19.4326, -99.1332], zoom_start=11, tiles='Stamen Toner')
 
+st.markdown("""
+    Hi Everybody!
+
+    In this part of the App you can search for about 10 types of Crimes for any Neighborhood in México City
+
+    *** Remember we have data from January 2019 up to March 2023, we will update as soon we have new Data ***
+
+    1.- Select the Neighborhood you want to analyse
+
+    2.- Select the year you want to see
+
+    3.- Select the Month, we suggest you to choose "ALL" to select all year long, luckly not every month this crime is commited
+
+    4.- Finally, select the crime you want to Analyse
+
+    5.- Search it!
+
+
+    *** You have to use all the selectors to display the Search buttom ***
+
+    """)
+
 col1, col2, col3 = st.columns([1,3,1])
 
 with col1:
