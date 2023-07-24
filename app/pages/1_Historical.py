@@ -37,7 +37,7 @@ st.markdown("""
 
     1.- Select the Neighborhood you want to analyse
 
-    2.- Select the year you want to see
+    2.- Select the year you want
 
     3.- Select the Month, we suggest you to choose "ALL" to select all year long, luckly not every month this crime is commited
 
