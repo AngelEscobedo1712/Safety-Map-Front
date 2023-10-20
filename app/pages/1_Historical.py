@@ -152,7 +152,7 @@ with col2:
 
                 south_west_corner = [min(dataframe.Latitude)*0.9999,min(dataframe.Longitude)*1.0001]
                 north_east_corner = [max(dataframe.Latitude)*1.0001,max(dataframe.Longitude)*0.9999]
-                map = folium.Map(location=[dataframe.Latitude.mean(), dataframe.Longitude.mean()], zoom_start=11, tiles='Stamen Toner')
+                map = folium.Map(location=[dataframe.Latitude.mean(), dataframe.Longitude.mean()], zoom_start=11)#, tiles='Stamen Toner')
                 for row in data:
                     category = row['Category']
                     color = category_colors.get(category, '#000000')  # Default to black if category not in mapping
