@@ -56,7 +56,7 @@ with col1:
     # Fetch neighborhoods from the backend
     if 'neighborhoods' not in st.session_state:
         response = requests.get(API_HOST + "/neighborhoods")
-        neighborhoods = response.json()["neighborhoods"]
+        neighborhoods = response.json()["Neighborhoods"]
         st.session_state.neighborhoods = neighborhoods
     else:
         neighborhoods = st.session_state.neighborhoods
